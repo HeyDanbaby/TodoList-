@@ -3,8 +3,16 @@
     <div class="todo-container">
       <div class="todo-wrap">
         <MyHeader :addTodo="addTodo"></MyHeader>
-        <MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo"></MyList>
-        <MyFooter :todos="todos"></MyFooter>
+        <MyList
+          :todos="todos"
+          :checkTodo="checkTodo"
+          :deleteTodo="deleteTodo"
+        ></MyList>
+        <MyFooter
+          :todos="todos"
+          :checkAllTodo="checkAllTodo"
+          :clearAllTodo="clearAllTodo"
+        ></MyFooter>
       </div>
     </div>
   </div>
@@ -41,12 +49,31 @@ export default {
       });
     },
     deleteTodo(id) {
-      // 由于filter不改变data中的原数组，需要把过滤出来的新数组 = 赋值给原数组 
-      this.todos = this.todos.filter((todo)=>{
+      // 由于filter不改变data中的原数组，需要把过滤出来的新数组 = 赋值给原数组
+      this.todos = this.todos.filter((todo) => {
         // 过滤出来的数组的条件
-        return todo.id !== id // 不是我删除的的那个id被过滤下来
-      }
-      )
+        return todo.id !== id; // 不是我删除的的那个id被过滤下来
+      });
+    },
+    checkAllTodo(done) {
+      this.todos.forEach((todo) => {
+        // 全选or不全选
+        // 如果勾选框全选：e.target.checked= true，那么每一个todo.done=true 都要被选起来
+        // 如果勾选框并不全选:e.target.checked= false，那么每一个todo.done=false 都不被选
+        todo.done = done;
+      });
+    },
+    clearAllTodo() {
+      this.todos = this.todos.filter((todo, index, todos) => {
+        // 函数体执行4次
+        console.log(todo, index, todos)     // 第1个todo对象 0 todos对象  done:true return false 就不在新数组中
+        // console.log(todo, index, todos)  // 第2个todo对象 1 todos对象  done:false return true 就在新数组中
+        // console.log(todo, index, todos)  // 第3个todo对象 2 todos对象  
+        // console.log(todo, index, todos)  // 第4个todo对象 3 todos对象
+        
+        // 过滤掉所有已完成的 当done:true => return:false => 就不会存在新数组中渲染在页面
+        return !todo.done;
+      });
     },
   },
 };
